@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/publisher"
+import "rl-statsapi-parser/internal/publisher"
 
 type BallHitData struct {
 	Players []struct{ // Players that hit the ball that frame.

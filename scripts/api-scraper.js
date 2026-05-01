@@ -11,10 +11,20 @@ async function openPage(url) {
     return driver;
 }
 
+
 async function extractEventNames(driver) {
     const events = await driver.findElements(By.css('h3 h3'));
     const eventNames = await Promise.all(events.map(e => e.getText()));
     return eventNames;
+}
+
+async function extractEventDescriptions(driver,) {
+    const eventNames = await extractEventNames(driver);
+    const eventDescriptions = await Promise.all(eventNames.map(async (name) => {
+        const descriptionElement = await driver.findElement(By.css(`#${name} > div > div > span:first-child`)).getText();
+        return descriptionElement;
+    }))
+    return eventDescriptions;
 }
 
 async function getFieldPadding(row) {
@@ -127,7 +137,14 @@ async function main() {
 
         console.log(`Event names successfully written to ${JSON_DEST}/eventnames.json`);
 
-        console.log('Extracting event structures into ${JSON_DEST}/eventstructures.json');
+        console.log(`Extracting event descriptions into ${JSON_DEST}/eventdescriptions.json`);
+
+        const eventDescriptions = await extractEventDescriptions(driver);
+        await writeFile(`${JSON_DEST}/eventdescriptions.json`, JSON.stringify(eventDescriptions));
+
+        console.log(`Event descriptions successfully written to ${JSON_DEST}/eventdescriptions.json`);
+
+        console.log(`Extracting event structures into ${JSON_DEST}/eventstructures.json`);
 
         const eventStructures = await extractEventStructures(driver);
         await writeFile(`${JSON_DEST}/eventstructures.json`, JSON.stringify(eventStructures));

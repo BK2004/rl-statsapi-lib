@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/publisher"
+import "rl-statsapi-parser/internal/publisher"
 
 type GoalScoredData struct {
 	GoalSpeed float64 `json:"GoalSpeed"` // Speed of the ball (Unreal Units/second) when it crossed the goal line.

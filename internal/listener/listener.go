@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"rl-statsapi-parser/events"
-	_ "rl-statsapi-parser/events"
-	"rl-statsapi-parser/publisher"
+	"rl-statsapi-parser/internal/events"
+	_ "rl-statsapi-parser/internal/events"
+	"rl-statsapi-parser/internal/publisher"
 	"time"
 )
 
@@ -33,7 +33,7 @@ func publish(eventName string, data json.RawMessage) {
 	case "UpdateState":
 		var parsed events.UpdateStateData
 		if err := json.Unmarshal(data, &parsed); err != nil {
-			fmt.Printf("Failed to unmarshal UpdateState data: %v\n.", err)
+			fmt.Printf("Failed to unmarshal UpdateState data: %v.", err)
 			return
 		}
 		events.UpdateState.Publish(parsed)
@@ -163,7 +163,7 @@ func publish(eventName string, data json.RawMessage) {
 			return
 		}
 		events.StatfeedEvent.Publish(parsed)
-		// END LISTEN EVENT SWITCH for scripts/api-to-go.js
+// END LISTEN EVENT SWITCH for scripts/api-to-go.js
 	default:
 		fmt.Printf("Unknown event: %s\n", eventName)
 	}

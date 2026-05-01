@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/publisher"
+import "rl-statsapi-parser/internal/publisher"
 
 type PodiumStartData struct {
 	MatchGuid string `json:"MatchGuid"` // Only set for online or LAN matches.

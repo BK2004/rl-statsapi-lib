@@ -3,15 +3,20 @@ import { writeFile, readFile, appendFile } from "fs/promises";
 
 const JSON_DEST = join(import.meta.dirname, '..', 'data');
 const EVENT_NAMES_NAME = "eventnames.json"
+const EVENT_DESCRIPTIONS_NAME = "eventdescriptions.json"
 const EVENT_STRUCTS_NAME = "eventstructures.json"
-const EVENT_STRUCTS_DEST = join(import.meta.dirname, '..', 'src', 'events');
-const EVENT_LISTENER_DEST = join(import.meta.dirname, '..', 'src', 'listener', 'listener.go');
+const EVENT_STRUCTS_DEST = join(import.meta.dirname, '..', 'internal', 'events');
+const EVENT_LISTENER_DEST = join(import.meta.dirname, '..', 'internal', 'listener', 'listener.go');
+const SUBSCRIBER_EXPORT_DEST = join(import.meta.dirname, '..', 'main.go');
 
 const LISTENER_SWITCH_START = '// START LISTEN EVENT SWITCH'
 const LISTENER_SWITCH_END = '// END LISTEN EVENT SWITCH'
 
+const SUBSCRIBER_EXPORT_START = '// START SUBSCRIBER EXPORT'
+const SUBSCRIBER_EXPORT_END = '// END SUBSCRIBER EXPORT'
+
 const EVENT_STRUCT_PREAMBLE = `package events\n
-import "rl-statsapi-parser/publisher"\n\n`;
+import "rl-statsapi-parser/internal/publisher"\n\n`;
 
 const STATIC_TYPE_TRANSLATIONS = {
     string: "string",
@@ -94,9 +99,33 @@ async function writeListenerSwitch(eventNames) {
     await writeFile(EVENT_LISTENER_DEST, newFileContents);
 }
 
+async function writeSubscriberExports(eventNames, eventDescriptions) {
+    let fileContents = await readFile(SUBSCRIBER_EXPORT_DEST, "utf8");
+    const exportStartIndex = fileContents.indexOf(SUBSCRIBER_EXPORT_START);
+    const exportEndIndex = fileContents.indexOf(SUBSCRIBER_EXPORT_END);
+
+    if (exportStartIndex === -1 || exportEndIndex === -1) {
+        console.error("Could not find subscriber exports in file.");
+        return;
+    }
+
+    let newFileContents = fileContents.substring(0, exportStartIndex + SUBSCRIBER_EXPORT_START.length) + "\n\n";
+    for (let i = 0; i < eventNames.length; i++) {
+        const eventName = eventNames[i];
+        const description = eventDescriptions[i] || "No description available.";
+        // Write description above export of newSubscriber for event
+        newFileContents += `\t// ${description}\n`;
+        newFileContents += `\t${eventName} = newSubscriber(events.${eventName})\n`;
+    }
+    newFileContents += fileContents.substring(exportEndIndex);
+
+    await writeFile(SUBSCRIBER_EXPORT_DEST, newFileContents);
+}
+
 async function main() {
     try {
         const eventNames = await readJSON(join(JSON_DEST, EVENT_NAMES_NAME));
+        const eventDescriptions = await readJSON(join(JSON_DEST, EVENT_DESCRIPTIONS_NAME));
         const eventStructs = await readJSON(join(JSON_DEST, EVENT_STRUCTS_NAME));
 
         for (const [name, struct] of Object.entries(eventStructs)) {
@@ -108,6 +137,10 @@ async function main() {
         console.log(`Writing listener switch to ${EVENT_LISTENER_DEST}`)
         await writeListenerSwitch(eventNames);
         console.log(`Finished writing listener switch to ${EVENT_LISTENER_DEST}`);
+
+        console.log(`Writing subscriber exports to ${SUBSCRIBER_EXPORT_DEST}`)
+        await writeSubscriberExports(eventNames, eventDescriptions);
+        console.log(`Finished writing subscriber exports to ${SUBSCRIBER_EXPORT_DEST}`);
     } catch (e) {
         console.error("Error:", e);
     }

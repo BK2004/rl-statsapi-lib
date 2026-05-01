@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/publisher"
+import "rl-statsapi-parser/internal/publisher"
 
 type UpdateStateData struct {
 	Players []struct{ // One entry per player in the match.
