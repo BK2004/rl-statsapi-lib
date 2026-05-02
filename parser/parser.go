@@ -1,7 +1,7 @@
 // Package parser provides a struct 'Parser' that provides subscribers to Rocket League StatsAPI events
 // (see https://www.rocketleague.com/en/developer/stats-api)
 //
-//go:generate godocdown -output=README.md
+//go:generate gomarkdown -overwrite -md-output=README.md .
 package parser
 
 import (
@@ -20,7 +20,7 @@ type subscriber[T any] struct {
 	publisher publisher.Publisher[T]
 }
 
-// A Parser provides many [Subscriber]s to each individual StatsAPI event.
+// A Parser provides many Subscribers to each individual StatsAPI event.
 // It also serves a subscriber to Parser.Connected to detect when a connection is opened
 // with the StatsAPI socket.
 type Parser struct {
@@ -65,13 +65,13 @@ func newSubscriber[T any](publisher publisher.Publisher[T]) Subscriber[T] {
 	return &subscriber[T]{publisher: publisher}
 }
 
-// A Config changes the behavior of a [Parser]
-// Set Config.Port to the port of the StatsAPI socket
+// A Config changes the behavior of a Parser.
+// Set Config.Port to the port of the StatsAPI socket.
 type Config struct {
 	Port int
 }
 
-// Creates a new [Parser], configurable via [Config]
+// Creates a new Parser, configurable via Config
 func New(cfg Config) Parser {
 	if cfg.Port == 0 {
 		cfg.Port = listener.PORT

@@ -1,32 +1,31 @@
-# parser
---
-    import "."
+# Package [github.com/bk2004/rl-statsapi-lib/parser](https://pkg.go.dev/github.com/bk2004/rl-statsapi-lib/parser?tab=doc)
 
-Package parser provides a struct 'Parser' that provides subscribers to Rocket
-League StatsAPI events (see https://www.rocketleague.com/en/developer/stats-api)
+```go
+import github.com/bk2004/rl-statsapi-lib/parser
+```
 
-## Usage
+Package parser provides a struct 'Parser' that provides
+subscribers to Rocket League StatsAPI events (see
+https://www.rocketleague.com/en/developer/stats-api)
 
-#### type Config
-
+## Types
+### Type Config
 ```go
 type Config struct {
 	Port int
 }
 ```
+A Config changes the behavior of a Parser. Set Config.Port to the port of
+the StatsAPI socket.
 
-A Config changes the behavior of a [Parser] Set Config.Port to the port of the
-StatsAPI socket
 
-#### type Connected
-
+### Type Connected
 ```go
 type Connected = listener.Connected
 ```
 
 
-#### type Parser
-
+### Type Parser
 ```go
 type Parser struct {
 	UpdateState         Subscriber[events.UpdateStateData]
@@ -50,32 +49,40 @@ type Parser struct {
 	StatfeedEvent       Subscriber[events.StatfeedEventData]
 
 	Connected Subscriber[Connected]
+	// contains filtered or unexported fields
 }
 ```
+A Parser provides many Subscribers to each individual StatsAPI event.
+It also serves a subscriber to Parser.Connected to detect when a connection
+is opened with the StatsAPI socket.
 
-A Parser provides many [Subscriber]s to each individual StatsAPI event. It also
-serves a subscriber to Parser.Connected to detect when a connection is opened
-with the StatsAPI socket.
-
-#### func  New
+### Functions
 
 ```go
 func New(cfg Config) Parser
 ```
-Creates a new [Parser], configurable via [Config]
+Creates a new Parser, configurable via Config
 
-#### func (*Parser) Quit
+
+
+### Methods
 
 ```go
 func (p *Parser) Quit()
 ```
 
-#### type Subscriber
 
+
+
+### Type Subscriber
 ```go
 type Subscriber[T any] interface {
 	Subscribe() chan T
 }
 ```
-
 A Subscriber allows subscribers to a topic
+
+
+
+
+
