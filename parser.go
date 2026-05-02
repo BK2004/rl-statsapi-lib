@@ -63,6 +63,5 @@ var (
 	RoundStarted = newSubscriber(events.RoundStarted)
 	// Sent when someone earns a stat.
 	StatfeedEvent = newSubscriber(events.StatfeedEvent)
-
 // END SUBSCRIBER EXPORT for scripts/api-to-go.js
 )

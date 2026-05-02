@@ -1,7 +1,6 @@
 package publisher
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -42,10 +41,6 @@ func (p *publisher[T]) Publish(data T) {
 	defer p.subscribersMutex.RUnlock()
 
 	for _, ch := range p.subscribers {
-		select {
-		case ch <- data:
-		default:
-			fmt.Printf("Failed to publish %s to subscriber.\n", p.Topic)
-		}
+		ch <- data
 	}
 }

@@ -7,13 +7,17 @@ const EVENT_DESCRIPTIONS_NAME = "eventdescriptions.json"
 const EVENT_STRUCTS_NAME = "eventstructures.json"
 const EVENT_STRUCTS_DEST = join(import.meta.dirname, '..', 'internal', 'events');
 const EVENT_LISTENER_DEST = join(import.meta.dirname, '..', 'internal', 'listener', 'listener.go');
-const SUBSCRIBER_EXPORT_DEST = join(import.meta.dirname, '..', 'main.go');
+const SUBSCRIBER_EXPORT_DEST = join(import.meta.dirname, '..', 'parser.go');
+const EVENTS_TEST_DEST = join(import.meta.dirname, '..', 'parser_test.go');
 
 const LISTENER_SWITCH_START = '// START LISTEN EVENT SWITCH'
 const LISTENER_SWITCH_END = '// END LISTEN EVENT SWITCH'
 
 const SUBSCRIBER_EXPORT_START = '// START SUBSCRIBER EXPORT'
 const SUBSCRIBER_EXPORT_END = '// END SUBSCRIBER EXPORT'
+
+const EVENTS_TEST_START = '// START TEST EVENTS'
+const EVENTS_TEST_END = '// END TEST EVENTS'
 
 const EVENT_STRUCT_PREAMBLE = `package events\n
 import "github.com/bk2004/rl-statsapi-parser/internal/publisher"\n\n`;
@@ -122,6 +126,25 @@ async function writeSubscriberExports(eventNames, eventDescriptions) {
     await writeFile(SUBSCRIBER_EXPORT_DEST, newFileContents);
 }
 
+async function writeEventTests(eventNames) {
+    let fileContents = await readFile(EVENTS_TEST_DEST, "utf8");
+    const eventsTestStartIndex = fileContents.indexOf(EVENTS_TEST_START);
+    const eventsTestEndIndex = fileContents.indexOf(EVENTS_TEST_END);
+
+    if (eventsTestStartIndex === -1 || eventsTestEndIndex === -1) {
+        console.error("Could not find events testing in file.");
+        return;
+    }
+
+    let newFileContents = fileContents.substring(0, eventsTestStartIndex + EVENTS_TEST_START.length) + "\n\n";
+    for (const eventName of eventNames) {
+        newFileContents += `var test${eventName} = flag.Bool("${eventName.toLowerCase()}", false, "test event ${eventName}")\nfunc Test${eventName}(t* testing.T) {\n\tif !*testMatchPaused && !*testAll {\n\t\tt.Skip("skipping test of MatchPaused")\n\t}\n\tfmt.Printf("Waiting on ${eventName} event")\n\tselect {\n\tcase <-${eventName}.Subscribe():\n\t\tbreak\n\tcase <-time.After(testTimeoutSeconds * time.Second):\n\t\tt.Errorf("Failed to receive ${eventName} event")\n\t}\n}\n\n`
+    }
+    newFileContents += fileContents.substring(eventsTestEndIndex);
+
+    await writeFile(EVENTS_TEST_DEST, newFileContents);
+}
+
 async function main() {
     try {
         const eventNames = await readJSON(join(JSON_DEST, EVENT_NAMES_NAME));
@@ -141,6 +164,10 @@ async function main() {
         console.log(`Writing subscriber exports to ${SUBSCRIBER_EXPORT_DEST}`)
         await writeSubscriberExports(eventNames, eventDescriptions);
         console.log(`Finished writing subscriber exports to ${SUBSCRIBER_EXPORT_DEST}`);
+
+        console.log(`Writing event tests to ${EVENTS_TEST_DEST}`);
+        await writeEventTests(eventNames);
+        console.log(`Finished writing event tests to ${EVENTS_TEST_DEST}`);
     } catch (e) {
         console.error("Error:", e);
     }
