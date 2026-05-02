@@ -17,6 +17,7 @@ const EVENT_PUBLISHERS_TAG = 'EVENT PUBLISHER STRUCT';
 const EVENT_PUBLISHERS_INIT_TAG = 'INIT PUBLISHER STRUCT';
 const PARSER_SUBSCRIBERS_TAG = 'PARSER SUBSCRIBERS';
 const INIT_PARSER_SUBSCRIBERS_TAG = 'INIT PARSER SUBSCRIBERS';
+const EVENT_TYPE_EXPORTS_TAG = 'EVENT TYPE EXPORTS';
 
 const EVENT_STRUCT_PREAMBLE = `package events\n\n`;
 
@@ -142,6 +143,15 @@ async function writeParserSubscribers(eventNames) {
     await writeToTags(PARSER_DEST, INIT_PARSER_SUBSCRIBERS_TAG, contentsInit);
 }
 
+async function writeEventTypeExports(eventNames) {
+    let contents = "";
+    for (const eventName of eventNames) {
+        contents += `type ${eventName} = events.${eventName}Data\n`;
+    }
+
+    await writeToTags(PARSER_DEST, EVENT_TYPE_EXPORTS_TAG, contents);
+}
+
 async function main() {
     const write = async (dest, label, callback, ...args) => {
         console.log(`Writing ${label} to ${dest}`);
@@ -161,6 +171,7 @@ async function main() {
         await write(LISTENER_DEST, 'event publishers type and initialization', writeEventPublishers, eventNames);
         await write(PARSER_DEST, 'parser subscribers type and initialization', writeParserSubscribers, eventNames);
         await write(PARSER_DEST, 'event tests', writeEventTests, eventNames);
+        await write(PARSER_DEST, 'event type exports', writeEventTypeExports, eventNames);
 
     } catch (e) {
         console.error("Error:", e);
