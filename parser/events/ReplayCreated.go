@@ -1,5 +1,6 @@
 package events
 
+// Sent when a replay is initialized. Does not pertain to goal replays, only replays you load via the Match History menu.
 type ReplayCreatedData struct {
 	MatchGuid string `json:"MatchGuid"` // Only set for online or LAN matches.
 }

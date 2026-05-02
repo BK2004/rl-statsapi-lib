@@ -1,5 +1,6 @@
 package events
 
+// Sent when someone earns a stat.
 type StatfeedEventData struct {
 	EventName string `json:"EventName"` // Asset name of the StatEvent (e.g. "Demolish", "Save").
 	Type string `json:"Type"` // Localized display label for the stat (e.g. "Demolition").

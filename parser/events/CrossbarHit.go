@@ -1,5 +1,6 @@
 package events
 
+// Sent when the ball hits a crossbar.
 type CrossbarHitData struct {
 	BallSpeed float64 `json:"BallSpeed"` // Ball speed on impact.
 	ImpactForce float64 `json:"ImpactForce"` // Impact force of the ball relative to the crossbar normal.

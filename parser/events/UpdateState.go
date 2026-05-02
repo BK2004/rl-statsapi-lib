@@ -1,5 +1,6 @@
 package events
 
+// Sent X amount of times per second based on the player's PacketSendRate preference.
 type UpdateStateData struct {
 	Players []struct{ // One entry per player in the match.
 		Name string `json:"Name"` // Display name.

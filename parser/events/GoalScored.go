@@ -1,5 +1,6 @@
 package events
 
+// Sent when a goal is scored.
 type GoalScoredData struct {
 	GoalSpeed float64 `json:"GoalSpeed"` // Speed of the ball (Unreal Units/second) when it crossed the goal line.
 	GoalTime float64 `json:"GoalTime"` // Length of the previous round in seconds.

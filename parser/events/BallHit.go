@@ -1,5 +1,6 @@
 package events
 
+// Sent one frame after the ball is hit.
 type BallHitData struct {
 	Players []struct{ // Players that hit the ball that frame.
 		Name string `json:"Name"` // Display name.

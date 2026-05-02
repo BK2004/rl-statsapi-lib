@@ -5,7 +5,7 @@ const JSON_DEST = join(import.meta.dirname, '..', 'data');
 const EVENT_NAMES_NAME = "eventnames.json"
 const EVENT_DESCRIPTIONS_NAME = "eventdescriptions.json"
 const EVENT_STRUCTS_NAME = "eventstructures.json"
-const EVENTS_DEST = join(import.meta.dirname, '..', 'internal', 'events');
+const EVENTS_DEST = join(import.meta.dirname, '..', 'events');
 const LISTENER_DEST = join(import.meta.dirname, '..', 'internal', 'listener', 'listener.go');
 const PARSER_DEST = join(import.meta.dirname, '..', 'parser.go');
 const PARSER_TEST_DEST = join(import.meta.dirname, '..', 'parser_test.go');
@@ -66,12 +66,12 @@ async function writeField(filename, fieldName, fieldStruct, tabs) {
     }
 }
 
-async function writeStructToFile(eventName, struct) {
+async function writeStructToFile(eventName, struct, description) {
     // Reset file if it exists, give it the preamble
     const dest = join(EVENTS_DEST, `${eventName}.go`);
     await writeFile(dest, EVENT_STRUCT_PREAMBLE);
 
-    await appendFile(dest, `type ${eventName}Data struct {\n`)
+    await appendFile(dest, `// ${description}\ntype ${eventName}Data struct {\n`)
 
     const tabs = 1; // Start at 1 tab for written fields
     for (const [fieldName, fieldStruct] of Object.entries(struct)) {
@@ -132,7 +132,7 @@ async function writeEventPublishers(eventNames) {
 }
 
 async function writeParserSubscribers(eventNames) {
-    let contentsType = "";
+    let contentsType = "\n";
     let contentsInit = "";
     for (const eventName of eventNames) {
         contentsType += `\t${eventName} Subscriber[events.${eventName}Data]\n`;
@@ -141,15 +141,6 @@ async function writeParserSubscribers(eventNames) {
 
     await writeToTags(PARSER_DEST, PARSER_SUBSCRIBERS_TAG, contentsType);
     await writeToTags(PARSER_DEST, INIT_PARSER_SUBSCRIBERS_TAG, contentsInit);
-}
-
-async function writeEventTypeExports(eventNames) {
-    let contents = "";
-    for (const eventName of eventNames) {
-        contents += `type ${eventName} = events.${eventName}Data\n`;
-    }
-
-    await writeToTags(PARSER_DEST, EVENT_TYPE_EXPORTS_TAG, contents);
 }
 
 async function main() {
@@ -164,14 +155,13 @@ async function main() {
         const eventStructs = await readJSON(join(JSON_DEST, EVENT_STRUCTS_NAME));
 
         for (const [name, struct] of Object.entries(eventStructs)) {
-            await write(`${EVENTS_DEST}/${name}.go`, `struct for event ${name}`, writeStructToFile, name, struct);
+            await write(`${EVENTS_DEST}/${name}.go`, `struct for event ${name}`, writeStructToFile, name, struct, eventDescriptions[eventNames.indexOf(name)]);
         }
 
         await write(LISTENER_DEST, 'listener switch', writeListenerSwitch, eventNames);
         await write(LISTENER_DEST, 'event publishers type and initialization', writeEventPublishers, eventNames);
         await write(PARSER_DEST, 'parser subscribers type and initialization', writeParserSubscribers, eventNames);
         await write(PARSER_DEST, 'event tests', writeEventTests, eventNames);
-        await write(PARSER_DEST, 'event type exports', writeEventTypeExports, eventNames);
 
     } catch (e) {
         console.error("Error:", e);

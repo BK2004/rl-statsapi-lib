@@ -1,5 +1,6 @@
 package events
 
+// Sent when the in-game clock has changed.
 type ClockUpdatedSecondsData struct {
 	TimeSeconds int64 `json:"TimeSeconds"` // Seconds remaining in the match.
 	BOvertime bool `json:"bOvertime"` // True if the game is in overtime.

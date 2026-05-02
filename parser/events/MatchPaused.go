@@ -1,5 +1,6 @@
 package events
 
+// Sent when the game is paused by a match admin.
 type MatchPausedData struct {
 	MatchGuid string `json:"MatchGuid"` // Only set for online or LAN matches.
 }
