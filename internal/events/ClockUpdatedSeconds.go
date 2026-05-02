@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/internal/publisher"
+import "github.com/bk2004/rl-statsapi-parser/internal/publisher"
 
 type ClockUpdatedSecondsData struct {
 	TimeSeconds int64 `json:"TimeSeconds"` // Seconds remaining in the match.

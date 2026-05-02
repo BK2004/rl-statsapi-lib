@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/internal/publisher"
+import "github.com/bk2004/rl-statsapi-parser/internal/publisher"
 
 type StatfeedEventData struct {
 	EventName string `json:"EventName"` // Asset name of the StatEvent (e.g. "Demolish", "Save").

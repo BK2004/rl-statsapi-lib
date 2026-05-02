@@ -1,12 +1,9 @@
-package main
+package parser
 
 import (
-	"fmt"
-	"os"
-	"os/signal"
-	"rl-statsapi-parser/internal/events"
-	_ "rl-statsapi-parser/internal/listener"
-	"rl-statsapi-parser/internal/publisher"
+	"github.com/bk2004/rl-statsapi-parser/internal/events"
+	_ "github.com/bk2004/rl-statsapi-parser/internal/listener"
+	"github.com/bk2004/rl-statsapi-parser/internal/publisher"
 )
 
 type Subscriber[T any] interface {
@@ -23,13 +20,6 @@ func (s *subscriber[T]) Subscribe() chan T {
 
 func newSubscriber[T any](publisher publisher.Publisher[T]) Subscriber[T] {
 	return &subscriber[T]{publisher: publisher}
-}
-
-func main() {
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt)
-	<-signalChan
-	fmt.Println("Exiting...")
 }
 
 var (
@@ -73,5 +63,6 @@ var (
 	RoundStarted = newSubscriber(events.RoundStarted)
 	// Sent when someone earns a stat.
 	StatfeedEvent = newSubscriber(events.StatfeedEvent)
+
 // END SUBSCRIBER EXPORT for scripts/api-to-go.js
 )

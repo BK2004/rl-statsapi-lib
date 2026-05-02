@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/internal/publisher"
+import "github.com/bk2004/rl-statsapi-parser/internal/publisher"
 
 type GoalReplayWillEndData struct {
 	MatchGuid string `json:"MatchGuid"` // Only set for online or LAN matches.

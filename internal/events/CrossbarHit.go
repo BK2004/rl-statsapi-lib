@@ -1,6 +1,6 @@
 package events
 
-import "rl-statsapi-parser/internal/publisher"
+import "github.com/bk2004/rl-statsapi-parser/internal/publisher"
 
 type CrossbarHitData struct {
 	BallSpeed float64 `json:"BallSpeed"` // Ball speed on impact.

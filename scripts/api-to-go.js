@@ -16,7 +16,7 @@ const SUBSCRIBER_EXPORT_START = '// START SUBSCRIBER EXPORT'
 const SUBSCRIBER_EXPORT_END = '// END SUBSCRIBER EXPORT'
 
 const EVENT_STRUCT_PREAMBLE = `package events\n
-import "rl-statsapi-parser/internal/publisher"\n\n`;
+import "github.com/bk2004/rl-statsapi-parser/internal/publisher"\n\n`;
 
 const STATIC_TYPE_TRANSLATIONS = {
     string: "string",

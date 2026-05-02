@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"rl-statsapi-parser/internal/events"
-	_ "rl-statsapi-parser/internal/events"
-	"rl-statsapi-parser/internal/publisher"
 	"time"
+
+	"github.com/bk2004/rl-statsapi-parser/internal/events"
+	_ "github.com/bk2004/rl-statsapi-parser/internal/events"
+	"github.com/bk2004/rl-statsapi-parser/internal/publisher"
 )
 
 const (
