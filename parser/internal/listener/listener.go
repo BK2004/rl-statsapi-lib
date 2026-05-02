@@ -21,28 +21,33 @@ type Response struct {
 	Data  json.RawMessage `json:"Data"`
 }
 
+type Connected struct {
+	Port int
+}
+
 type EventPublishers struct {
 	// START EVENT PUBLISHER STRUCT
-	UpdateState publisher.Publisher[events.UpdateStateData]
-	BallHit publisher.Publisher[events.BallHitData]
+	UpdateState         publisher.Publisher[events.UpdateStateData]
+	BallHit             publisher.Publisher[events.BallHitData]
 	ClockUpdatedSeconds publisher.Publisher[events.ClockUpdatedSecondsData]
-	CountdownBegin publisher.Publisher[events.CountdownBeginData]
-	CrossbarHit publisher.Publisher[events.CrossbarHitData]
-	GoalReplayEnd publisher.Publisher[events.GoalReplayEndData]
-	GoalReplayStart publisher.Publisher[events.GoalReplayStartData]
-	GoalReplayWillEnd publisher.Publisher[events.GoalReplayWillEndData]
-	GoalScored publisher.Publisher[events.GoalScoredData]
-	MatchCreated publisher.Publisher[events.MatchCreatedData]
-	MatchInitialized publisher.Publisher[events.MatchInitializedData]
-	MatchDestroyed publisher.Publisher[events.MatchDestroyedData]
-	MatchEnded publisher.Publisher[events.MatchEndedData]
-	MatchPaused publisher.Publisher[events.MatchPausedData]
-	MatchUnpaused publisher.Publisher[events.MatchUnpausedData]
-	PodiumStart publisher.Publisher[events.PodiumStartData]
-	ReplayCreated publisher.Publisher[events.ReplayCreatedData]
-	RoundStarted publisher.Publisher[events.RoundStartedData]
-	StatfeedEvent publisher.Publisher[events.StatfeedEventData]
-// END EVENT PUBLISHER STRUCT
+	CountdownBegin      publisher.Publisher[events.CountdownBeginData]
+	CrossbarHit         publisher.Publisher[events.CrossbarHitData]
+	GoalReplayEnd       publisher.Publisher[events.GoalReplayEndData]
+	GoalReplayStart     publisher.Publisher[events.GoalReplayStartData]
+	GoalReplayWillEnd   publisher.Publisher[events.GoalReplayWillEndData]
+	GoalScored          publisher.Publisher[events.GoalScoredData]
+	MatchCreated        publisher.Publisher[events.MatchCreatedData]
+	MatchInitialized    publisher.Publisher[events.MatchInitializedData]
+	MatchDestroyed      publisher.Publisher[events.MatchDestroyedData]
+	MatchEnded          publisher.Publisher[events.MatchEndedData]
+	MatchPaused         publisher.Publisher[events.MatchPausedData]
+	MatchUnpaused       publisher.Publisher[events.MatchUnpausedData]
+	PodiumStart         publisher.Publisher[events.PodiumStartData]
+	ReplayCreated       publisher.Publisher[events.ReplayCreatedData]
+	RoundStarted        publisher.Publisher[events.RoundStartedData]
+	StatfeedEvent       publisher.Publisher[events.StatfeedEventData]
+	// END EVENT PUBLISHER STRUCT
+	Connected publisher.Publisher[Connected]
 }
 
 func publish(eventName string, data json.RawMessage, publishers *EventPublishers) {
@@ -186,7 +191,7 @@ func publish(eventName string, data json.RawMessage, publishers *EventPublishers
 			return
 		}
 		publishers.StatfeedEvent.Publish(parsed)
-// END LISTEN EVENT SWITCH for scripts/api-to-go.js
+		// END LISTEN EVENT SWITCH for scripts/api-to-go.js
 	default:
 		fmt.Printf("Unknown event: %s\n", eventName)
 	}
@@ -210,8 +215,7 @@ func connect(port int, quit chan struct{}, publishers *EventPublishers) {
 		return
 	}
 	defer conn.Close()
-	fmt.Printf("Connected to Rocket League StatsAPI.\n")
-
+	publishers.Connected.Publish(Connected{Port: port})
 	decoder := json.NewDecoder(conn)
 	for {
 		select {
@@ -228,26 +232,27 @@ func Listen() (*EventPublishers, chan struct{}) {
 	fmt.Printf("Listening for Rocket League StatsAPI on port %d.\n", PORT)
 	var publishers EventPublishers = EventPublishers{
 		// START INIT PUBLISHER STRUCT
-		UpdateState: publisher.New[events.UpdateStateData]("UpdateState"),
-		BallHit: publisher.New[events.BallHitData]("BallHit"),
+		UpdateState:         publisher.New[events.UpdateStateData]("UpdateState"),
+		BallHit:             publisher.New[events.BallHitData]("BallHit"),
 		ClockUpdatedSeconds: publisher.New[events.ClockUpdatedSecondsData]("ClockUpdatedSeconds"),
-		CountdownBegin: publisher.New[events.CountdownBeginData]("CountdownBegin"),
-		CrossbarHit: publisher.New[events.CrossbarHitData]("CrossbarHit"),
-		GoalReplayEnd: publisher.New[events.GoalReplayEndData]("GoalReplayEnd"),
-		GoalReplayStart: publisher.New[events.GoalReplayStartData]("GoalReplayStart"),
-		GoalReplayWillEnd: publisher.New[events.GoalReplayWillEndData]("GoalReplayWillEnd"),
-		GoalScored: publisher.New[events.GoalScoredData]("GoalScored"),
-		MatchCreated: publisher.New[events.MatchCreatedData]("MatchCreated"),
-		MatchInitialized: publisher.New[events.MatchInitializedData]("MatchInitialized"),
-		MatchDestroyed: publisher.New[events.MatchDestroyedData]("MatchDestroyed"),
-		MatchEnded: publisher.New[events.MatchEndedData]("MatchEnded"),
-		MatchPaused: publisher.New[events.MatchPausedData]("MatchPaused"),
-		MatchUnpaused: publisher.New[events.MatchUnpausedData]("MatchUnpaused"),
-		PodiumStart: publisher.New[events.PodiumStartData]("PodiumStart"),
-		ReplayCreated: publisher.New[events.ReplayCreatedData]("ReplayCreated"),
-		RoundStarted: publisher.New[events.RoundStartedData]("RoundStarted"),
-		StatfeedEvent: publisher.New[events.StatfeedEventData]("StatfeedEvent"),
-// END INIT PUBLISHER STRUCT
+		CountdownBegin:      publisher.New[events.CountdownBeginData]("CountdownBegin"),
+		CrossbarHit:         publisher.New[events.CrossbarHitData]("CrossbarHit"),
+		GoalReplayEnd:       publisher.New[events.GoalReplayEndData]("GoalReplayEnd"),
+		GoalReplayStart:     publisher.New[events.GoalReplayStartData]("GoalReplayStart"),
+		GoalReplayWillEnd:   publisher.New[events.GoalReplayWillEndData]("GoalReplayWillEnd"),
+		GoalScored:          publisher.New[events.GoalScoredData]("GoalScored"),
+		MatchCreated:        publisher.New[events.MatchCreatedData]("MatchCreated"),
+		MatchInitialized:    publisher.New[events.MatchInitializedData]("MatchInitialized"),
+		MatchDestroyed:      publisher.New[events.MatchDestroyedData]("MatchDestroyed"),
+		MatchEnded:          publisher.New[events.MatchEndedData]("MatchEnded"),
+		MatchPaused:         publisher.New[events.MatchPausedData]("MatchPaused"),
+		MatchUnpaused:       publisher.New[events.MatchUnpausedData]("MatchUnpaused"),
+		PodiumStart:         publisher.New[events.PodiumStartData]("PodiumStart"),
+		ReplayCreated:       publisher.New[events.ReplayCreatedData]("ReplayCreated"),
+		RoundStarted:        publisher.New[events.RoundStartedData]("RoundStarted"),
+		StatfeedEvent:       publisher.New[events.StatfeedEventData]("StatfeedEvent"),
+		// END INIT PUBLISHER STRUCT
+		Connected: publisher.New[Connected]("Connected"),
 	}
 	go func() {
 		for {
