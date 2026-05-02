@@ -1,10 +1,10 @@
 package parser
 
 import (
-	"github.com/bk2004/rl-statsapi-parser/internal/events"
-	"github.com/bk2004/rl-statsapi-parser/internal/listener"
-	_ "github.com/bk2004/rl-statsapi-parser/internal/listener"
-	"github.com/bk2004/rl-statsapi-parser/internal/publisher"
+	"github.com/bk2004/rl-statsapi-lib/parser/internal/events"
+	"github.com/bk2004/rl-statsapi-lib/parser/internal/listener"
+	_ "github.com/bk2004/rl-statsapi-lib/parser/internal/listener"
+	"github.com/bk2004/rl-statsapi-lib/parser/internal/publisher"
 )
 
 type Subscriber[T any] interface {

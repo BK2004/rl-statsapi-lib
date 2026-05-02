@@ -6,9 +6,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/bk2004/rl-statsapi-parser/internal/events"
-	_ "github.com/bk2004/rl-statsapi-parser/internal/events"
-	"github.com/bk2004/rl-statsapi-parser/internal/publisher"
+	"github.com/bk2004/rl-statsapi-lib/parser/internal/events"
+	_ "github.com/bk2004/rl-statsapi-lib/parser/internal/events"
+	"github.com/bk2004/rl-statsapi-lib/parser/internal/publisher"
 )
 
 const (
