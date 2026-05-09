@@ -11,7 +11,9 @@ const PARSER_DEST = join(import.meta.dirname, '..', 'parser.go');
 const PARSER_TEST_DEST = join(import.meta.dirname, '..', 'parser_test.go');
 
 const EVENT_FWDS = {
-
+    "ReplayWillEnd": "GoalReplayWillEnd",
+    "ReplayPlaybackStart": "GoalReplayStart",
+    "ReplayPlaybackEnd": "GoalReplayEnd",
 }
 
 const LISTENER_SWITCH_TAG = 'LISTEN EVENT SWITCH';

@@ -190,6 +190,27 @@ func publish(eventName string, data json.RawMessage, publishers *EventPublishers
 			return
 		}
 		publishers.StatfeedEvent.Publish(parsed)
+	case "ReplayWillEnd":
+		var parsed events.GoalReplayWillEndData
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			fmt.Printf("Failed to unmarshal ReplayWillEnd data: %v.", err)
+			return
+		}
+		publishers.GoalReplayWillEnd.Publish(parsed)
+	case "ReplayPlaybackStart":
+		var parsed events.GoalReplayStartData
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			fmt.Printf("Failed to unmarshal ReplayPlaybackStart data: %v.", err)
+			return
+		}
+		publishers.GoalReplayStart.Publish(parsed)
+	case "ReplayPlaybackEnd":
+		var parsed events.GoalReplayEndData
+		if err := json.Unmarshal(data, &parsed); err != nil {
+			fmt.Printf("Failed to unmarshal ReplayPlaybackEnd data: %v.", err)
+			return
+		}
+		publishers.GoalReplayEnd.Publish(parsed)
 // END LISTEN EVENT SWITCH for scripts/api-to-go.js
 	default:
 		fmt.Printf("Unknown event: %s\n", eventName)
